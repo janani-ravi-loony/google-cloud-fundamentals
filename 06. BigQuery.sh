@@ -2,98 +2,128 @@
 #################################
 ##### Public Datasets
 
-Click on the Navigation Menu and click on BigQuery > SQL Workspace
+# Click on the Navigation Menu and click on BigQuery > SQL Workspace
 
-Click on Hide Preview features
+# Click on Hide Preview features
 
-On the left hand side we can see our project . Pin our project 
+# On the left hand side we can see our project . Pin our project 
 
 Go to https://cloud.google.com/bigquery/public-data and scroll through the page
 
-Under the section “Accessing public datasets in the Cloud Console” we can see the link
+# Under the section “Accessing public datasets in the Cloud Console” we can see the link
 
 Copy the link 
 https://console.cloud.google.com/bigquery?project=bigquery-public-data&page=project 
 and open the link in a new browser window
 
-Now click on bigquery-public-data and show the list
+# Star the dataset
 
-Search for chicago_taxi_trips
+# Now go back to the original tab and hit refresh - your original project and the public dataset should both be visible
 
-Open up the taxi_trips table and show "Schema", "Details", and "Preview"
+# Now click on bigquery-public-data and show the list
 
-=> Note the size of the table, it will be expensive to run queries on this table
+# Search for chicago_taxi_trips
 
-Try to run a query Click on "Query Table"
+# Open up the taxi_trips table and show "Schema", "Details", and "Preview"
 
-A query will be populated with the cursor just after the "SELECT"
-
-Click on the columns that you are interested in 
-
-Try to run, the query will fail because you have explicitly select your project so you can be billed for this
+# => Note the size of the table, it will be expensive to run queries on this table
 
 
-Select the project from the project drop-down, and query table again
+SELECT
+  *
+FROM
+  `bigquery-public-data.chicago_taxi_trips.taxi_trips` ;
 
-=> Show how many GBs are processed when you run this query on the bottom right
+# Note that this processes 76GB of data when it runs
 
-Show the results at the bottom
+# Select only a few columns
 
-Click on "Job information", "Results", "JSON", "Execution details"
+SELECT
+  `company`,
+  `fare`,
+  `payment_type`,
+  `trip_end_timestamp`,
+  `trip_miles`,
+  `trip_seconds`,
+  `trip_start_timestamp`
+FROM
+  `bigquery-public-data.chicago_taxi_trips.taxi_trips` ;
+
+# Observe that this processes only 13.38 GB of data
+
+# Run the query and show
+
+# Click on "Job information", "Results", "JSON", "Execution details"
 
 
 
 #################################
 ##### Creating our own datasets and tables
 
-Click on our project and create a new dataset called my_dataset
-
-Within my_dataset, click on CREATE TABLE
-
-Within Create table from: click on ‘Upload’ select a file from Desktop (life_exp.csv), 
-give the table name as "life_expectancy" and choose Auto detect schema
-
-Open life_expectancy and click on "Schema", "Preview", and "Details"
+# Click on our project and create a new dataset called "sales_dataset"
 
 
-Open up Cloud Shell and run this
+# Within "sales_dataset", click on CREATE TABLE
+
+
+# Within Create table from: click on ‘Upload’ select a file from Desktop (supermarket_sales.csv), 
+
+# Give the table name as "supermarket_sales" and choose Auto detect schema
+
+# In Advanced
+
+Header rows to skip = 1
+
+# Open "supermarket_sales" and click on "Schema", "Preview", and "Details"
+
+----------------------------------------------------
+
+
+# Open up Cloud Shell and run this
 
 bq mk \
 -t \
 --expiration 120 \
---description "My table" \
-my_dataset.my_table \
+--description "My temporary sales table" \
+sales_dataset.temp_sales_table \
 name:STRING,sales:FLOAT,year:STRING
 
 
-Go back to the BigQuery page and refresh, show that the table has been created
+# Go back to the BigQuery page and refresh, show that the table has been created
 
-Show the details of the table (it will disappear in 2 minutes we can show that later)
+# Show the details of the table (it will disappear in 2 minutes we can show that later)
+
+# Cloud shell
+
+bq ls --format prettyjson sales_dataset
+
+
 
 
 #################################
 ##### Running queries on tables
 
-SELECT * FROM `plucky-respect-310804.my_dataset.life_expectancy` LIMIT 1000
+SELECT * FROM `plucky-respect-310804.sales_dataset.supermarket_sales` LIMIT 1000
 
-Click on More -> Format and show the query formatted
+# Click on More -> Format and show the query formatted
 
-Run the query and show the results
+# Run the query and show the results
 
-Click on More -> Query settings, show the settings
+# Click on More -> Query settings, show the settings
 
 
-Next show this query
+# Next show this query
 
 SELECT
-  Status, AVG( Life_expectancy_)
+  City, AVG(Total)
 FROM
-  `plucky-respect-310804.my_dataset.life_expectancy`
+  `plucky-respect-310804.sales_dataset.supermarket_sales`
 
 
-Show the error, in the validator
 
-Fix the error as shown below
+# Show the error, in the validator
+
+# Fix the error as shown below
 
 SELECT
   Status, AVG( Life_expectancy_)
@@ -103,71 +133,83 @@ GROUP BY
   Status
 
 #################################
-##### Data Studio
+##### Looker Studio
 
 Set up a new condition
 
 SELECT
   *
 FROM
-  `plucky-respect-310804.my_dataset.life_expectancy`
-WHERE
-  Status = "Developed"
-  AND Life_expectancy_ >= 70
+  `plucky-respect-310804.sales_dataset.supermarket_sales`
+WHERE 
+  City = 'Mandalay'
 
 
-Click on EXPLORE DATASET (Explore with Data Studio)
+Click on EXPLORE DATASET (Explore with Looker Studio)
 
-# data studio opens up and on the right hand side we can see Chart 
+# Looker studio opens up and on the right hand side we can see Chart 
 
 Click on Time Series Chart
 
 Click on Data and change:
-Dimension : Year
-Breakdown Dimension : Country
-Metric : Life_expectancy
-Sort : Year (Descending)
-Secondary Sort : Life_expectancy
+
+Date Range Dimension: Date
+Dimension : Date
+Breakdown Dimension : Gender
+Metric : SUM(Total)
 
 
-Click on Column Chart
+# Add a page to the chart
+
+# Add Column Chart
+
 
 Click on Data and change:
-Dimension : Country
-Metric : Population
+
+Date Range Dimension: None
+Dimension : Product Line
+Metric : SUM(Total)
+
+
+# On the same page add a Pie chart
+
+Click on Data and change:
+
+Date Range Dimension: None
+Dimension : Payment
+Metric : SUM(Total)
 
 
 #################################
 ##### Saved queries and save results to destination table
 
+# Back to the SQL editor
 
-Click on Save Query, save it as High Life Expectancy
+# Click on Save Query, save it as "Mandalay Sales"
 
-Go to saved Queries on the Left Hand Side and open the query and show that we have this query saved
+# Go to saved Queries on the Left Hand Side and open the query and show that we have this query saved
 
 SELECT
-  Country,
-  Status,
-  Life_expectancy_,
-  GDP
+  *
 FROM
-  `plucky-respect-310804.my_dataset.life_expectancy`
-WHERE
-  Year = 2015
+  `plucky-respect-310804.sales_dataset.supermarket_sales`
+WHERE 
+  City = 'Mandalay'
 
 
 # Do NOT run the query
 
-Click on More > Query settings
+# Click on More > Query settings
 
 Select on Set a destination table for query results
-Give dataset name - my_dataset
-Give table name as - life_expectancy_subset
-Save
+Give dataset name - sales_dataset
+Give table name as - mandalay_sales
 
-Run the query
+# Save
 
-Show the new table created
+# Run the query
+
+# Show the new table created in the same sales_dataset
 
 
 
