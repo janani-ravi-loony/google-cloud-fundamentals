@@ -76,6 +76,9 @@ Header rows to skip = 1
 
 # Open "supermarket_sales" and click on "Schema", "Preview", and "Details"
 
+
+# Click on "Query" and run the default query
+
 ----------------------------------------------------
 
 
@@ -126,11 +129,11 @@ FROM
 # Fix the error as shown below
 
 SELECT
-  Status, AVG( Life_expectancy_)
+  City, AVG(Total)
 FROM
-  `plucky-respect-310804.my_dataset.life_expectancy`
+  `plucky-respect-310804.sales_dataset.supermarket_sales`
 GROUP BY 
-  Status
+  City
 
 #################################
 ##### Looker Studio
@@ -141,8 +144,9 @@ SELECT
   *
 FROM
   `plucky-respect-310804.sales_dataset.supermarket_sales`
-WHERE 
-  City = 'Mandalay'
+
+
+Run the query
 
 
 Click on EXPLORE DATASET (Explore with Looker Studio)
