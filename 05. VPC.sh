@@ -1,6 +1,8 @@
 #################################
 VPC, Subnet and Firewall
 #################################
+# https://app.pluralsight.com/library/courses/gcp-vcp-networks-architecting-global-private-clouds
+# https://app.pluralsight.com/library/courses/gcp-leveraging-network-interconnection-options
 
 Click on the hamburger menu -> View All Products -> Select and Pin VPC.
 
