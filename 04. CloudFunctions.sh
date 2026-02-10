@@ -10,63 +10,119 @@ In search write "Cloud Function" and enable the Cloud Function API
 In search write "Cloud Build" and enable the Cloud Build API 
 
 
-From the side navigation go to "Cloud Run Functions" and click on it
+From the side navigation go to "Cloud Functions" and click on it
 
-Click on "Write a function" 
+Click on "Create Function" 
 
-Give the service name "hello-msg-func" 
+Give the function name "hello-msg-func" 
 
-Change runtime "Python 3.11"
+Rest of the things will remain as it is so we will not change anything and click on "Save"
 
-DO NOT specify any trigger (this will default to HTTP trigger)
+Expand the "Runtime, Build and Connection Settings" option and show the default things
 
-Use "Cloud IAM to authenticate incoming requests"
+Click on "Next"
 
--- Require authentication
+Choose the Python 3.11 runtime and show the main.py but do not change anything
 
-Click on "Create"
-
-----------------------
+Deploy the function
 
 
-Now you will see the Source
+Click on Testing tab
 
-main.py
-requirements.txt
+Test with the following:
 
+{}
 
-Click on "Save and redeploy"
+{"name" : "John"}
 
-Click on the URL for the function
+curl -m 70 -X POST https://us-central1-plucky-respect-310804.cloudfunctions.net/hello-msg-func \
+-H "Content-Type: application/json" \
+-d '{"name" : "everybody"}'
 
-https://<some_endpoint>.us-central1.run.app
+# Use the curl command that they have given
 
-You should see an authentication error
-
-Go to the "Test" option at the top
-
-Run the curl command on Cloud Shell
-
-This will work
-
----------------------
-
-Go to the security tab of the function
-
-"Allow unauthenticated invocations"
-
-Click on "Save"
-
-Click on the URL for the function again
-
-Now this works
-
-Pass a parameter
-
-https://<some_endpoint>.us-central1.run.app?name=Bob
-
+curl -m 70 -X POST https://us-central1-plucky-respect-310804.cloudfunctions.net/hello-msg-func \
+-H "Authorization: bearer $(gcloud auth print-identity-token)" \
+-H "Content-Type: application/json" \
+-d '{
+  "name": "Tina"
+}'
 
 ###########
+
+Next click on 'Triggers'
+
+Click on the trigger URL will result in an error
+
+Error: Forbidden
+Your client does not have permission to get URL /hello-msg-func from this server.
+
+=> Go to 'Permission' now
+
+Run this on Cloud Shell
+
+gcloud functions add-invoker-policy-binding hello-msg-func \
+      --region="us-central1" \
+      --member="allUsers"
+
+gcloud functions add-invoker-policy-binding anothertest \
+    --region="asia-southeast1"       \
+    --member="allUsers"
+
+Click on the trigger, it will print "Hello world!"
+
+Add this extra parameter to the URL "?name=Doris"
+
+The page will print "Hello Doris!"
+
+
+
+####################################
+### Deploy a simple Cloud Function using the console
+
+Create a folder called hello_msg
+
+mkdir hello_msg
+cd hello_msg
+
+nano main.py
+
+
+def print_message(request):
+
+	if request.method == 'GET':
+		if request.args and 'name' in request.args:
+			return 'Howdy ' + request.args.get('name') + '!\n'
+		else:
+			return f'Welcome to Cloud Functions!\n'
+
+	if request.method == 'POST':
+		data = request.get_json()
+		return 'Hello ' + data['name'] + '!\n'
+
+
+####################################
+
+
+gcloud functions deploy print_message \
+--gen2 \
+--runtime=python311 \
+--region=us-central1 \
+--source=. \
+--entry-point=print_message \
+--trigger-http \
+--allow-unauthenticated
+
+curl -X GET https://us-central1-plucky-respect-310804.cloudfunctions.net/print_message
+
+
+curl -X GET https://us-central1-plucky-respect-310804.cloudfunctions.net/print_message?name=loony 
+
+
+curl -X POST https://us-central1-plucky-respect-310804.cloudfunctions.net/print_message \
+-H "Content-Type:application/json"  -d '{"name":"Bob"}'
+
+
 
 
 
@@ -79,14 +135,10 @@ Make sure that the loony-oreilly-olt-bucket-source folder only contains puppy.jp
 
 Create a new cloud function
 
-# This will be Cloud Run - create a function with inline editor
-
-Trigger : Change the trigger to Cloud storage
-
-
-service name : negate-images
+function name : process-images
 Region : we will use the default one
-Event type : Finalize
+Trigger : Change the trigger to Cloud storage
+Event type : Finalize/Create
 Bucket : loony-oreilly-olt-bucket-source
 
 
@@ -94,11 +146,8 @@ Runtime: Python 3.11
 
 Entry point: transform_image
 
-# Click on "Create"
-
 
 ## main.py
-
 import functions_framework
 from google.cloud import storage
 from PIL import Image, ImageOps
@@ -141,13 +190,10 @@ def transform_image(cloud_event):
     print(f"Uploaded negated image as '{new_file_name}' to destination bucket: {dest_bucket_name}")
 
 
-
-
 ## requirements.txt
 functions-framework==3.*
 google-cloud-storage
 Pillow
-
 
 
 #
@@ -158,6 +204,16 @@ Show that the trigger is now bucket
 
 Show images in the loony-oreilly-olt-bucket-source
 
+Go to the "Testing" tab
+
+{
+	"bucket":"loony-oreilly-olt-bucket-source", 
+	"name":"puppy.jpeg"
+}
+
+# Go to the destination bucket loony-oreilly-olt-bucket-dest
+
+# Show the image
 
 # Go to the "loony-oreilly-olt-bucket-source"
 
@@ -167,13 +223,14 @@ Show images in the loony-oreilly-olt-bucket-source
 
 # Show the negated images
 
+# Show the logs for the function as well
+
 
 ####################################
 ### Cloud Functions triggered by Pub/Sub
 
 
 
---------------------
 
 Go to Cloud Functions
 
@@ -186,8 +243,6 @@ Select the trigger type "Cloud Pub/Sub".
 Choose the Pub/Sub topic you just created.
 
 Click on Python 3.12 runtime and change the main.py to the following:
-
-entry point: save_msg_to_json_bucket    
 
 # main.py
 import json
@@ -230,13 +285,13 @@ functions-framework==3.*
 google-cloud-storage
 
 
-Click on "Save and deploy"
+entry point: save_msg_to_json_bucket    
 
 ---------------------------
 
+Click on "Deploy"
 
-
-Click on the topic and select "Messages" > "Publish Message"
+Click on the topic and select "Message" > "Publish Message"
 
 Enter a message such as "User 'John Doe' uploaded a new file to the system at 10:32 AM.", and click "Publish".
 
