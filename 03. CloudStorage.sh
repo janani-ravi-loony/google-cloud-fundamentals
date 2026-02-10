@@ -45,7 +45,7 @@ Click on the lifecycle and see the details
 => Click on the url and login as cloud.user@loonycorn.com and code the code
 => Paste the code in cloud shell and here we go, our gsutil is configured.
 
-gsutil mb gs://loony-oreilly-olt-bucket
+gcloud storage buckets create gs://loony-oreilly-olt-bucket
 
 # Once we run the code, it will throw an error
 ServiceException: 409 A Cloud Storage bucket named 'simple' already exists. 
@@ -54,14 +54,14 @@ Bucket names must be globally unique across all Google Cloud projects,
 including those outside of your organization.
 
 
-gsutil mb gs://loony-oreilly-olt-bucket-source
+gcloud storage buckets create gs://loony-oreilly-olt-bucket-source
 
-gsutil ls
+gcloud storage ls
 
-gsutil mb -c regional -l us-central1 gs://loony-oreilly-olt-bucket-dest
+gcloud storage buckets create gs://loony-oreilly-olt-bucket-dest \
+	--location=us-central1 --default-storage-class=regional
 
-gsutil help mb
-
+gcloud storage buckets create --help
 
 ##################################
 ### Upload and configure file settings to be public
