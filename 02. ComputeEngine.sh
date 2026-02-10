@@ -260,8 +260,8 @@ Paste the below code on the Startup script textbox
 
 #!/bin/bash
 
-sudo apt-get update
-sudo apt-get install nginx -y
+apt-get update
+apt-get install nginx -y
 cat <<EOF >/var/www/html/index.nginx-debian.html
 <html><body><h1>WELCOME</h1>
 <p>And this is how you use startup scripts on the GCP!</p>
@@ -274,7 +274,7 @@ Create the VM
 
 Go to VM instances
 
-Copy over the external IP address of the instance-05
+Copy over the external IP address of the instance-5
 
 Open a new browser window and paste into the browser window
 
