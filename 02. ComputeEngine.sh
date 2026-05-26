@@ -162,35 +162,13 @@ $ ls -l
 
 $ python3 --version
 
-$ sudo apt-get update
+# Update packages and install Flask
+$ sudo apt update
 
-$ sudo apt install python3-pip
+$ sudo apt install python3-flask -y
 
-$ sudo apt-get install python3-venv
-
-$ python3 -m venv flask_env
-
-$ source flask_env/bin/activate
-
-$ pip3 install flask
-
-$ export FLASK_APP=server.py
-
-$ flask run --host=0.0.0.0 --port=8080
-
-
-# Click on the IP address for the machine, change port and see app (8080)
-
-# Show the firewall rules
-
-
-# Now go back to the app and run on default port 5000
-
-
-$ flask run --host=0.0.0.0
-
-
-# Now we cannot see this unless we open up this port using the firewall rules
+# Run the app
+$ sudo python3 app.py
 
 
 ##############
@@ -210,7 +188,7 @@ network : premium -> also click on question mark on both premium and standard
 Ip address : IPv4
 Type : Regional
 Region : US-central1
-Attached to : instance-1
+Attached to : instance-01
 
 Click on "reserve"
 

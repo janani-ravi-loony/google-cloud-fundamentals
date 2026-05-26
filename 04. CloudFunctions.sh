@@ -65,9 +65,6 @@ gcloud functions add-invoker-policy-binding hello-msg-func \
       --region="us-central1" \
       --member="allUsers"
 
-gcloud functions add-invoker-policy-binding anothertest \
-    --region="asia-southeast1"       \
-    --member="allUsers"
 
 Click on the trigger, it will print "Hello world!"
 
@@ -142,7 +139,7 @@ Event type : Finalize/Create
 Bucket : loony-oreilly-olt-bucket-source
 
 
-Runtime: Python 3.11
+Runtime: Python 3.13
 
 Entry point: transform_image
 
