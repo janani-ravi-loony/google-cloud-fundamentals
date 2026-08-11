@@ -10,7 +10,7 @@ https://console.cloud.google.com/
 
 Provide valid username and password 
 
-	Username : cloud.user@loonycorn.com
+	Username : <your cloud username>
 
 
 Click on the drop down menu at the top and you can see all the available projects 
